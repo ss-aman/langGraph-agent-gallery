@@ -8,6 +8,8 @@ developers who are new to the framework.
 
 ## Examples at a Glance
 
+### Beginner
+
 | # | Example | Key Concept | LLM Required |
 |---|---------|-------------|:---:|
 | 01 | [Hello LangGraph](#01-hello-langgraph) | StateGraph, nodes, edges | No |
@@ -15,6 +17,13 @@ developers who are new to the framework.
 | 03 | [ReAct Agent with Tools](#03-react-agent-with-tools) | Tool calling, agentic loops | Yes |
 | 04 | [Conditional Routing](#04-conditional-routing) | Branching, structured output | Yes |
 | 05 | [Human-in-the-Loop](#05-human-in-the-loop) | interrupt(), checkpointing | Yes |
+
+### Intermediate
+
+| # | Example | Key Concept | LLM Required |
+|---|---------|-------------|:---:|
+| 06 | [Multi-Agent Supervisor](#06-multi-agent-supervisor) | Supervisor pattern, agent coordination | Yes |
+| 07 | [Self-Reflection Agent](#07-self-reflection-agent) | Generate → Evaluate → Revise loop | Yes |
 
 ---
 
@@ -42,11 +51,16 @@ echo 'ANTHROPIC_API_KEY="your-key"' > .env
 ### 3. Run any example
 
 ```bash
+# Beginner
 python examples/01_hello_langgraph.py   # no API key needed
 python examples/02_simple_chatbot.py
 python examples/03_react_agent.py
 python examples/04_conditional_routing.py
 python examples/05_human_in_the_loop.py
+
+# Intermediate
+python examples/06_multi_agent_supervisor.py
+python examples/07_self_reflection_agent.py
 ```
 
 ---
@@ -143,6 +157,59 @@ each draft. The human can approve (publish) or request revisions (loop back).
 
 ---
 
+### 06: Multi-Agent Supervisor
+
+**File:** `examples/06_multi_agent_supervisor.py`  **Level:** Intermediate
+
+A supervisor LLM orchestrates two specialist workers — a **Researcher** and a
+**Writer** — to produce a polished report on any topic. Every worker returns
+to the supervisor after finishing, and the supervisor decides the next step
+using structured routing output.
+
+```
+                     ┌──────────────┐
+         ┌──────────►│  researcher  │──────────────┐
+         │           └──────────────┘              ▼
+[START]─►supervisor◄──────────────────────── (back to supervisor)
+         │           ┌──────────────┐              ▲
+         ├──────────►│    writer    │──────────────┘
+         │           └──────────────┘
+         └──► FINISH ──► [END]
+```
+
+**Teaches:** supervisor pattern, multi-agent coordination, `Annotated` state
+with `add_messages` reducer, structured routing with Pydantic, iteration guard,
+agent handoff via message history.
+
+---
+
+### 07: Self-Reflection Agent
+
+**File:** `examples/07_self_reflection_agent.py`  **Level:** Intermediate
+
+A code-writing agent that generates Python code, **critiques its own output**
+with a structured multi-dimension evaluator, and revises until the score meets
+a quality threshold — or a maximum iteration cap is hit.
+
+```
+[START]
+   │
+generate_node ◄──────────────────────────────────┐
+   │                                              │ (revise)
+evaluate_node                                     │
+   │                                              │
+(quality_gate) ── score < PASS_SCORE ─────────────┘
+   │
+   └── score ≥ PASS_SCORE (or max iterations) ──► format_node ──► [END]
+```
+
+**Teaches:** reflection / self-critique pattern, structured multi-score
+evaluation output, quality gates as conditional edges, iteration guards,
+dynamic prompt construction based on prior feedback, history logging across
+iterations.
+
+---
+
 ## Core LangGraph Concepts
 
 | Concept | Description |
@@ -161,13 +228,19 @@ each draft. The human can approve (publish) or request revisions (loop back).
 
 ## Learning Path
 
-New to LangGraph? Work through the examples in order:
+Work through the examples in order — each one builds on concepts from the last.
 
+**Beginner**
 1. **Example 01** — understand graphs, nodes, and edges with zero LLM distraction.
 2. **Example 02** — add an LLM and learn how message history works.
 3. **Example 03** — give the LLM tools and see the agentic loop in action.
 4. **Example 04** — branch the graph based on LLM decisions.
 5. **Example 05** — pause the graph and bring a human into the workflow.
+
+**Intermediate**
+
+6. **Example 06** — coordinate multiple specialised agents under a supervisor.
+7. **Example 07** — make an agent critique and improve its own output iteratively.
 
 ---
 
