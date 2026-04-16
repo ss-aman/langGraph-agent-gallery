@@ -1,0 +1,24 @@
+## Core LangGraph + LangChain
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-core>=0.3.0
+
+## LLM Providers (install at least one)
+langchain-openai>=0.2.0          # OpenAI / Azure OpenAI
+# langchain-anthropic>=0.3.0    # Anthropic Claude
+# langchain-google-genai>=2.0.0 # Google Gemini
+# langchain-ollama>=0.2.0       # Local Ollama models
+
+## Async database
+aiosqlite>=0.20.0
+
+## Authentication
+PyJWT>=2.8.0
+cryptography>=42.0.0
+
+## Validation & settings
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+## Utilities
+python-dotenv>=1.0.0
